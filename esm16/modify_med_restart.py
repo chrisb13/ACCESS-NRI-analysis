@@ -19,39 +19,28 @@ from matplotlib.ticker import MultipleLocator
 from matplotlib import colors as c
 import datetime
 
-if __name__ == "__main__": 
+def find_nearest(array, value):
+    array = np.asarray(array)
+    idx = (np.abs(array - value)).argmin()
+    return array[idx],idx
 
-    infile='./grid_spec.nc'
-    assert(os.path.exists(infile)),"netCDF file does not exist!"
-    ifile=xr.open_dataset(infile)
+def pbathy(paxis):
+    cs1=paxis.pcolormesh(y,x,pme,vmin=0,vmax=5000,alpha=0.5)
+    plt.colorbar(cs1,cax=make_axes_locatable(ax).append_axes("bottom", size="5%", pad=0.25),orientation='horizontal')
+    paxis.set_xlim([-10,40])
+    paxis.set_ylim([25,49])
+    paxis.grid(True)
+    return
 
-    def find_nearest(array, value):
-        array = np.asarray(array)
-        idx = (np.abs(array - value)).argmin()
-        return array[idx],idx
+def mkmask(bathyarr):
+    return np.ma.masked_where(bathyarr==0,bathyarr) 
 
-    def pbathy(paxis):
-        cs1=paxis.pcolormesh(y,x,pme,vmin=0,vmax=5000,alpha=0.5)
-        plt.colorbar(cs1,cax=make_axes_locatable(ax).append_axes("bottom", size="5%", pad=0.25),orientation='horizontal')
-        paxis.set_xlim([-10,40])
-        paxis.set_ylim([25,49])
-        paxis.grid(True)
-        return
-
-    def mkmask(bathyarr):
-        return np.ma.masked_where(bathyarr==0,bathyarr) 
-
-    plt.close('all')
-    fig=plt.figure()
-    ax=fig.add_subplot(1, 3,1)
-
+def mk_med_mask(ifile):
     yT,xT=ifile['grid_y_T'].values,ifile['grid_x_T'].values
     x,y=np.meshgrid(yT,xT)
     pme=mkmask(ifile['depth_t'].T)
 
     #pme[100:150,200:220]=-10000000000
-
-    pbathy(ax)
 
     yTs={'30':find_nearest(yT,30),'46':find_nearest(yT,46)}
     xTs={'-8':find_nearest(xT,-8),'38':find_nearest(xT,38)}
@@ -78,7 +67,22 @@ if __name__ == "__main__":
 
     eastmed=np.zeros(np.shape(oceanpts),dtype=bool)
     eastmed=wholemed&~westmed
+    return x,y,pme,wholemed, westmed,eastmed,oceanpts
 
+if __name__ == "__main__": 
+
+    ifol='/home/561/cyb561/esm16/'
+    infile=ifol+'grid_spec.nc'
+    assert(os.path.exists(infile)),"netCDF file does not exist!"
+    ifile=xr.open_dataset(infile)
+
+    plt.close('all')
+    fig=plt.figure()
+    ax=fig.add_subplot(1, 3,1)
+
+    x,y,pme,wholemed,westmed,eastmed,oceanpts=mk_med_mask(ifile)
+
+    pbathy(ax)
     ifile['depth_t'].T
     pme=mkmask(ifile['depth_t'].T)
     pme[wholemed]=-10000000000
@@ -105,10 +109,10 @@ if __name__ == "__main__":
     cs1=ax.pcolormesh(y,x,pme.mask,cmap=cMap,alpha=0.5)
     ax.set_title('West med')
 
-    #plt.show()
+    plt.show()
 
-    before_long='./ocean_temp_salt.res.nc-19501231'
-    after_long='./ocean_temp_salt.res.nc-10001231'
+    before_long=ifol+'ocean_temp_salt.res.nc-19501231'
+    after_long=ifol+'ocean_temp_salt.res.nc-10001231'
     ifile_before=xr.open_dataset(before_long)
     ifile_after=xr.open_dataset(after_long)
     #source
@@ -117,7 +121,7 @@ if __name__ == "__main__":
     #https://access-nri.zulipchat.com/#narrow/channel/470332-ocean-seaice/topic/Mediterranean.20sea.20in.20esm1.2E6/near/528205171
     #based on Spencer Wong
     #You could clone from this tag https://github.com/ACCESS-NRI/access-esm1.6-configs/tree/20250612-spinup-dev-preindustrial%2Bconcentrations to get the config as at the start of JuneSpinup
-    rfile=xr.open_dataset('./ocean_temp_salt.res.nc')
+    rfile=xr.open_dataset(ifol+'ocean_temp_salt.res.nc')
 
 
     plt.close('all')
@@ -161,7 +165,6 @@ if __name__ == "__main__":
     wholenmed_fill.fill_value=1
     wholenmed_fill=wholenmed_fill.T
 
-
     #remove the old salt
     salt_none=rfile['salt'][0,:,:,:]*wholenmed_fill.filled()
 
@@ -200,9 +203,9 @@ if __name__ == "__main__":
     ax.set_ylim([25,49])
     ax.set_title('has the salt been assigned to the old xarray?')
 
-    #plt.show()
+    plt.show()
 
-    #we need to write out salt
+    ##we need to write out salt
     rfile.attrs['history']=   r'Created by /home/561/cyb561/esm16/modify_med_restart.py'
     rfile.attrs['Comment']=   r'This file was created to reset the salinity back to what was in /g/data/access/projects/access/data/ACCESS_CMIP5/restart/hPI-C01a/ocn/ocean_temp_salt.res.nc-19501231 for the Mediterranean sea in esm1.6, see discussion https://access-nri.zulipchat.com/#narrow/channel/470332-ocean-seaice/topic/Mediterranean.20sea.20in.20esm1.2E6/near/528205419.'
     rfile.attrs['contact']=   r'chris.bull@anu.edu.au'
