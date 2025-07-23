@@ -67,6 +67,15 @@ if __name__ == "__main__":
     westmedf =mk_filled_array_from_mask(westmed,oceanpts)
     eastmedf =mk_filled_array_from_mask(eastmed,oceanpts)
 
+    
+    ##########################################
+    #  define input folders for experiments  #
+    ##########################################
+    
+    ifiles=sorted(glob.glob('/scratch/p66/jxs599/access-esm/archive/JuneSpinUp-JuneSpinUp-bfaa9c5b/output0*/ocean/ocean-2d-surface_salt-1monthly-mean-ym_*.nc'))
+    assert(ifiles!=[]),"glob didn't find anything!"
+    JuneSpinUp=mk_salty_tseries(ifiles[0:20])
+
     ifiles=sorted(glob.glob('/scratch/tm70/cyb561/access-esm/archive/cntrlR_01-cntrlR_01-09d5ffea/output*/ocean/ocean-2d-surface_salt-1monthly-mean-ym_*.nc'))
 
     assert(ifiles!=[]),"glob didn't find anything!"
@@ -121,8 +130,10 @@ if __name__ == "__main__":
     #fig=plt.figure()
     #ax=fig.add_subplot(1, 1,1)
     #pmedtseries(ax,cntrlr_01,'green','cntrlR_0')
-    #pmedtseries(ax,sicilyr_01,'blue','sicilyR_01')
-    #pmedtseries(ax,sardiniar_01,'red','sardiniarR_01')
+    #pmedtseries(ax,JuneSpinUp,'purple','JuneSpinUp')
+    ##pmedtseries(ax,sicilyr_01,'blue','sicilyR_01')
+    ##pmedtseries(ax,sardiniar_01,'red','sardiniarR_01')
+    #ax.set_title("Comparing: cntrlR_0, JuneSpinUp med' salinity")
     #ax.legend()
     #ax.grid()
     #ax.set_xlabel('Months')
@@ -131,6 +142,10 @@ if __name__ == "__main__":
 
     #tstep=30
 
+    print("Let's make a movie!!")
+    print("Let's make a movie!!")
+    print("Let's make a movie!!")
+
     for tstep in np.arange(240):
         print(tstep)
         plt.close('all')
@@ -138,7 +153,7 @@ if __name__ == "__main__":
         col=3
 
         fig=plt.figure(figsize=(5.0*col,3*row))
-        gs = gridspec.GridSpec(row, col,height_ratios=[1,1,.005,.1],width_ratios=[1]*col,hspace=.345,wspace=0.25)
+        gs = gridspec.GridSpec(row, col,height_ratios=[1,1,.00005,.1],width_ratios=[1]*col,hspace=.3,wspace=0.25)
 
         #timeseries
         ax = plt.subplot(gs[0,0:3])
@@ -150,25 +165,25 @@ if __name__ == "__main__":
         ax.legend(loc='upper left',ncol=3)
         ax.grid()
         ax.set_xlabel('Months')
-        ax.set_ylabel('Surface salinity')
+        ax.set_ylabel('Average Surface Salinity')
 
         #spatial maps
         ax = plt.subplot(gs[1,0])
-        cs1_cntrlr01=ax.pcolormesh(y,x,pme_cntrlr01[tstep,:].T,vmin=37.7, vmax=38.2)
+        cs1_cntrlr01=ax.pcolormesh(y,x,pme_cntrlr01[tstep,:].T,vmin=36.5, vmax=40)
         ax.set_title('cntrlr_01')
         #plt.colorbar(cs1,cax=make_axes_locatable(ax).append_axes("bottom", size="5%", pad=0.25),orientation='horizontal')
         ax.set_xlim([-10,40])
         ax.set_ylim([25,49])
 
         ax = plt.subplot(gs[1,1])
-        cs1_sicilyr=ax.pcolormesh(y,x,pme_sicilyr_01[tstep,:].T,cmap='seismic',vmin=-0.4,vmax=0.4)
+        cs1_sicilyr=ax.pcolormesh(y,x,pme_sicilyr_01[tstep,:].T,cmap='seismic',vmin=-0.6,vmax=0.6)
         ax.set_title('pme_sicilyr_01 - cntrlr_01')
         #plt.colorbar(cs1,cax=make_axes_locatable(ax).append_axes("bottom", size="5%", pad=0.25),orientation='horizontal')
         ax.set_xlim([-10,40])
         ax.set_ylim([25,49])
 
         ax = plt.subplot(gs[1,2])
-        cs1_sardiniar=ax.pcolormesh(y,x,pme_sardiniar_01[tstep,:].T,cmap='seismic',vmin=-0.4,vmax=0.4)
+        cs1_sardiniar=ax.pcolormesh(y,x,pme_sardiniar_01[tstep,:].T,cmap='seismic',vmin=-0.6,vmax=0.6)
         ax.set_title('pme_sardiniar_01 - cntrlr_01')
         #plt.colorbar(cs1,cax=make_axes_locatable(ax).append_axes("bottom", size="5%", pad=0.25),orientation='horizontal')
         ax.set_xlim([-10,40])

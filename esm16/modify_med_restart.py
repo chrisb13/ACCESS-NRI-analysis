@@ -109,7 +109,7 @@ if __name__ == "__main__":
     cs1=ax.pcolormesh(y,x,pme.mask,cmap=cMap,alpha=0.5)
     ax.set_title('West med')
 
-    plt.show()
+    #plt.show()
 
     before_long=ifol+'ocean_temp_salt.res.nc-19501231'
     after_long=ifol+'ocean_temp_salt.res.nc-10001231'
