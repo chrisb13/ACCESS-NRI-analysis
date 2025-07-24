@@ -145,7 +145,7 @@ if __name__ == "__main__":
     plt.colorbar(cs1,cax=make_axes_locatable(ax).append_axes("bottom", size="5%", pad=0.25),orientation='horizontal')
     ax.set_xlim([-10,40])
     ax.set_ylim([25,49])
-    ax.set_title('ocean_temp_salt.res.nc-19501231')
+    ax.set_title('ocean_temp_salt.res.nc-10001231')
 
     ax=fig.add_subplot(1, 3,3)
     pme=mkmask(rfile['salt'][0,0,:,:].T)
@@ -153,7 +153,7 @@ if __name__ == "__main__":
     plt.colorbar(cs1,cax=make_axes_locatable(ax).append_axes("bottom", size="5%", pad=0.25),orientation='horizontal')
     ax.set_xlim([-10,40])
     ax.set_ylim([25,49])
-    ax.set_title('rfile')
+    ax.set_title('rfile: ocean_temp_salt.res.nc')
 
     #plt.show()
 

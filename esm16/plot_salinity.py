@@ -74,7 +74,7 @@ if __name__ == "__main__":
     
     ifiles=sorted(glob.glob('/scratch/p66/jxs599/access-esm/archive/JuneSpinUp-JuneSpinUp-bfaa9c5b/output0*/ocean/ocean-2d-surface_salt-1monthly-mean-ym_*.nc'))
     assert(ifiles!=[]),"glob didn't find anything!"
-    JuneSpinUp=mk_salty_tseries(ifiles[0:20])
+    JuneSpinUp=mk_salty_tseries(ifiles[0:30])
 
     ifiles=sorted(glob.glob('/scratch/tm70/cyb561/access-esm/archive/cntrlR_01-cntrlR_01-09d5ffea/output*/ocean/ocean-2d-surface_salt-1monthly-mean-ym_*.nc'))
 
@@ -146,7 +146,7 @@ if __name__ == "__main__":
     print("Let's make a movie!!")
     print("Let's make a movie!!")
 
-    for tstep in np.arange(240):
+    for tstep in np.arange(360):
         print(tstep)
         plt.close('all')
         row=4
